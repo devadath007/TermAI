@@ -15,8 +15,12 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <!-- Animated Gradient Background -->
-    <div class="bg-gradient"></div>
+    <!-- Floating Blobs Background -->
+    <div class="bg-gradient">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
 
     <div class="app-container">
         <!-- Sidebar -->
@@ -44,13 +48,16 @@
         <main class="chat-container glass-panel">
             <header class="chat-header">
                 <div class="model-info">
-                    <i data-lucide="cpu" class="model-icon"></i>
+                    <i data-lucide="terminal" class="model-icon"></i>
                     <div>
-                        <h1>Gemini Flash AI</h1>
-                        <p>Enterprise CLI Protocol</p>
+                        <h1>TermAI Core</h1>
+                        <p>Command Line Interface Engine</p>
                     </div>
                 </div>
-                <button class="icon-btn" title="Settings"><i data-lucide="settings"></i></button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="icon-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme"><i data-lucide="sun"></i></button>
+                    <button class="icon-btn" title="Settings (Coming Soon)"><i data-lucide="settings"></i></button>
+                </div>
             </header>
             
             <div class="chat-scroll-area" id="chatHistory">

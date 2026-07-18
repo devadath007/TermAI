@@ -2,6 +2,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Lucide Icons
     lucide.createIcons();
 
+    // Theme Toggle Logic
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (localStorage.getItem('termai_theme') === 'light') {
+        document.body.classList.add('light-mode');
+        themeToggleBtn.innerHTML = '<i data-lucide="moon"></i>';
+    }
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        if (document.body.classList.contains('light-mode')) {
+            localStorage.setItem('termai_theme', 'light');
+            themeToggleBtn.innerHTML = '<i data-lucide="moon"></i>';
+        } else {
+            localStorage.setItem('termai_theme', 'dark');
+            themeToggleBtn.innerHTML = '<i data-lucide="sun"></i>';
+        }
+        lucide.createIcons();
+    });
+
     // 1. Dynamic Quick Commands (localStorage)
     const defaultCommands = [
         { id: 'c1', title: 'System Information', code: 'uname -a || systeminfo' },

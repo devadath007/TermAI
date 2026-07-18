@@ -574,3 +574,104 @@ body {
     from { opacity: 1; transform: translateY(0); }
     to { opacity: 0; transform: translateY(20px); }
 }
+
+/* Floating Blobs Animation */
+.bg-gradient {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+    background-color: var(--bg-base);
+    overflow: hidden;
+    animation: none; /* override previous */
+}
+.blob {
+    position: absolute;
+    filter: blur(80px);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: floatBlob 20s infinite ease-in-out alternate;
+}
+.blob-1 { background: var(--blob-1, rgba(41, 140, 252, 0.3)); width: 40vw; height: 40vw; top: -10%; left: -10%; animation-delay: 0s; }
+.blob-2 { background: var(--blob-2, rgba(85, 42, 216, 0.3)); width: 35vw; height: 35vw; bottom: -10%; right: -10%; animation-delay: -5s; }
+.blob-3 { background: var(--blob-3, rgba(200, 50, 150, 0.2)); width: 30vw; height: 30vw; top: 40%; left: 40%; animation-delay: -10s; }
+
+@keyframes floatBlob {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(10vw, 15vh) scale(1.1); }
+    100% { transform: translate(-10vw, -10vh) scale(0.9); }
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+    --text-primary: #18181b; /* Zinc 900 */
+    --text-secondary: #52525b; /* Zinc 600 */
+    --bg-base: #f4f4f5; /* Zinc 100 */
+    
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    
+    --accent: #09090b; /* Black */
+    --accent-hover: #27272a;
+    
+    --blob-1: rgba(59, 130, 246, 0.3);
+    --blob-2: rgba(139, 92, 246, 0.3);
+    --blob-3: rgba(236, 72, 153, 0.3);
+}
+
+body.light-mode .ai-message .message-bubble {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+body.light-mode .user-message .message-bubble {
+    color: #ffffff;
+}
+body.light-mode .message-bubble pre {
+    background: #e4e4e7;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+body.light-mode .message-bubble pre code {
+    color: #18181b;
+}
+body.light-mode .message-bubble code {
+    background: rgba(0,0,0,0.08);
+    color: #18181b;
+}
+body.light-mode .ai-avatar {
+    background: rgba(0, 0, 0, 0.05);
+}
+body.light-mode .user-avatar {
+    color: #ffffff;
+}
+body.light-mode .code-action-btn {
+    background: rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.1);
+    color: #18181b;
+}
+body.light-mode .code-action-btn:hover {
+    background: rgba(0,0,0,0.1);
+}
+body.light-mode .command-item {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+body.light-mode .command-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+body.light-mode .cmd-code {
+    background: rgba(0,0,0,0.05);
+}
+body.light-mode .input-form {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+body.light-mode .input-form:focus-within {
+    border-color: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.04);
+}
+body.light-mode .toast-msg {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0,0,0,0.1);
+    color: #18181b;
+}
