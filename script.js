@@ -1,3 +1,5 @@
+import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize Lucide Icons
     lucide.createIcons();
@@ -57,6 +59,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const attachmentPreview = document.getElementById('attachmentPreview');
     const attachmentName = document.getElementById('attachmentName');
     const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
+
+    // WebLLM State
+    const SYSTEM_INSTRUCTION = `
+You are an elite CLI Assistant built by the USER. Your primary function is to provide highly accurate, cross-platform terminal commands and automation scripts.
+
+When providing commands, format them clearly in markdown code blocks.
+If the command differs between Windows (PowerShell/CMD), Linux, or macOS, you MUST explicitly provide the correct command for each OS.
+Assume the user wants modern, efficient, and direct answers without unnecessary fluff.
+Maintain a highly professional, enterprise-grade AI persona.
+`;
+
+    let engine = null;
+    const conversation = [
+        { role: "system", content: SYSTEM_INSTRUCTION }
+    ];
+
+    async function initializeWebLLM() {
+        const modelLoadingBanner = document.getElementById('modelLoadingBanner');
+        const loadingStatusText = document.getElementById('loadingStatusText');
+        const loadingProgressBar = document.getElementById('loadingProgressBar');
+        
+        try {
+            const initProgressCallback = (initProgress) => {
+                const progress = Math.round(initProgress.progress * 100);
+                loadingProgressBar.style.width = `${progress}%`;
+                loadingStatusText.textContent = initProgress.text;
+            };
+
+            const selectedModel = "Phi-3-mini-4k-instruct-q4f16_1-MLC";
+            
+            engine = await CreateMLCEngine(
+                selectedModel,
+                { initProgressCallback: initProgressCallback }
+            );
+
+            loadingStatusText.textContent = "Model loaded successfully! Running completely locally.";
+            setTimeout(() => {
+                modelLoadingBanner.classList.add('hidden');
+                chatInput.disabled = false;
+                submitBtn.disabled = false;
+            }, 1000);
+        } catch (error) {
+            console.error("Failed to load WebLLM:", error);
+            loadingStatusText.textContent = "Failed to load local AI model: " + error.message;
+            loadingStatusText.style.color = "#ef4444";
+            document.querySelector('.spinning-icon')?.classList.remove('spinning-icon');
+        }
+    }
+
+    // Initialize the engine when the app loads
+    initializeWebLLM();
 
     let currentAttachment = null;
     let dragStartIndex = -1;
@@ -269,34 +322,40 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         scrollToBottom();
 
-        const payload = { message: message || "Analyze the attached file." };
-        if (currentAttachment) {
-            payload.attachment = currentAttachment;
-            // Clear attachment UI after sending
-            removeAttachmentBtn.click();
-        }
+        const payloadMessage = message || "Analyze the attached file.";
+        conversation.push({ role: "user", content: payloadMessage });
 
         try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+            if (!engine) {
+                throw new Error("AI Engine is still loading. Please wait.");
+            }
+
+            const chunks = await engine.chat.completions.create({
+                messages: conversation,
+                stream: true,
             });
 
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(text || 'API Error');
+            let fullText = "";
+            let isFirstChunk = true;
+
+            for await (const chunk of chunks) {
+                if (isFirstChunk) {
+                    bubbleDiv.innerHTML = "";
+                    isFirstChunk = false;
+                }
+                const content = chunk.choices[0]?.delta?.content || "";
+                fullText += content;
+                bubbleDiv.innerHTML = marked.parse(fullText);
+                scrollToBottom();
             }
-            
-            const data = await response.json();
-            
-            bubbleDiv.innerHTML = marked.parse(data.text);
-            lucide.createIcons(); // Re-render icons inside new markup
-            scrollToBottom();
+
+            conversation.push({ role: "assistant", content: fullText });
+            lucide.createIcons();
             
         } catch (err) {
             console.error(err);
             bubbleDiv.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+            conversation.pop(); // Remove the user message so they can try again
         }
     });
 
