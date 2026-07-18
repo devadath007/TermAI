@@ -511,6 +511,8 @@ body {
     color: var(--text-secondary);
     display: flex;
     align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s;
 }
 .cmd-drag-handle:active {
     cursor: grabbing;
@@ -519,6 +521,12 @@ body {
     display: flex;
     gap: 4px;
     align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.command-item:hover .cmd-drag-handle,
+.command-item:hover .cmd-actions {
+    opacity: 1;
 }
 .cmd-action-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; border-radius: 4px; display:flex;}
 .cmd-action-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }

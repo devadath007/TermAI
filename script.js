@@ -192,16 +192,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Quick unescape for copying
             const unescaped = code.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#039;/g, "'");
             navigator.clipboard.writeText(unescaped).then(() => {
-                const icon = copyBtn.querySelector('i');
-                const oldIcon = icon.getAttribute('data-lucide');
-                icon.setAttribute('data-lucide', 'check');
+                copyBtn.innerHTML = '<i data-lucide="check" style="color: #10b981;"></i>';
                 lucide.createIcons();
                 showToast('Command copied to clipboard!');
                 setTimeout(() => {
-                    icon.setAttribute('data-lucide', oldIcon);
+                    copyBtn.innerHTML = '<i data-lucide="copy"></i>';
                     lucide.createIcons();
                 }, 2000);
-            });
+            }).catch(console.error);
         }
 
         const saveBtn = e.target.closest('.save-cmd-btn');
