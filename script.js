@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
     const chatHistory = document.getElementById('chatHistory');
+    const toastContainer = document.getElementById('toastContainer');
     
     // Attachment Elements
     const attachBtn = document.getElementById('attachBtn');
@@ -27,26 +28,75 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
 
     let currentAttachment = null;
+    let dragStartIndex = -1;
 
     function saveCommands() {
         localStorage.setItem('termai_commands', JSON.stringify(commandsData));
         renderCommands(commandsData);
     }
 
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.innerHTML = `<i data-lucide="check-circle" style="color: #10b981;"></i> <span>${message}</span>`;
+        toastContainer.appendChild(toast);
+        lucide.createIcons();
+        setTimeout(() => {
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
     function renderCommands(cmds) {
         commandList.innerHTML = '';
-        cmds.forEach(cmd => {
+        cmds.forEach((cmd, index) => {
             const item = document.createElement('div');
             item.className = 'command-item fade-in';
+            item.setAttribute('draggable', 'true');
+            item.dataset.index = index;
             item.innerHTML = `
-                <div style="flex:1;">
+                <div class="cmd-drag-handle" title="Drag to reorder"><i data-lucide="grip-vertical"></i></div>
+                <div style="flex:1; cursor:pointer;" class="cmd-content">
                     <div class="cmd-title">${cmd.title}</div>
                     <div class="cmd-code">${cmd.code}</div>
                 </div>
-                <button class="cmd-delete-btn" data-id="${cmd.id}" title="Delete"><i data-lucide="trash-2"></i></button>
+                <div class="cmd-actions">
+                    <button class="cmd-action-btn cmd-sidebar-copy" data-code="${escapeHtml(cmd.code)}" title="Copy"><i data-lucide="copy"></i></button>
+                    <button class="cmd-action-btn cmd-delete-btn" data-id="${cmd.id}" title="Delete"><i data-lucide="trash-2"></i></button>
+                </div>
             `;
+            
+            // Drag and Drop Events
+            item.addEventListener('dragstart', (e) => {
+                dragStartIndex = index;
+                item.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                item.classList.add('drag-over');
+            });
+            item.addEventListener('dragleave', () => {
+                item.classList.remove('drag-over');
+            });
+            item.addEventListener('drop', (e) => {
+                e.preventDefault();
+                item.classList.remove('drag-over');
+                const dragEndIndex = index;
+                if (dragStartIndex !== dragEndIndex && dragStartIndex !== -1) {
+                    const movedItem = commandsData[dragStartIndex];
+                    commandsData.splice(dragStartIndex, 1);
+                    commandsData.splice(dragEndIndex, 0, movedItem);
+                    saveCommands();
+                }
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                dragStartIndex = -1;
+            });
+
             // Click to insert code
-            item.querySelector('div').addEventListener('click', () => {
+            item.querySelector('.cmd-content').addEventListener('click', () => {
                 chatInput.value = cmd.code;
                 chatInput.focus();
             });
@@ -56,6 +106,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 commandsData = commandsData.filter(c => c.id !== cmd.id);
                 saveCommands();
             });
+            // Copy logic
+            item.querySelector('.cmd-sidebar-copy').addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(cmd.code).then(() => {
+                    showToast('Command copied to clipboard!');
+                });
+            });
+
             commandList.appendChild(item);
         });
         lucide.createIcons();
@@ -138,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const oldIcon = icon.getAttribute('data-lucide');
                 icon.setAttribute('data-lucide', 'check');
                 lucide.createIcons();
+                showToast('Command copied to clipboard!');
                 setTimeout(() => {
                     icon.setAttribute('data-lucide', oldIcon);
                     lucide.createIcons();
@@ -157,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     code: unescaped
                 });
                 saveCommands();
+                showToast('Command saved to Quick Commands!');
             }
         }
     });
@@ -207,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (err) {
             console.error(err);
-            bubbleDiv.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+            bubbleDiv.innerHTML = \`<span style="color: #ef4444;">Error: \${err.message}</span>\`;
         }
     });
 

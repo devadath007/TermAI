@@ -64,8 +64,14 @@
             </div>
             
             <div class="input-area">
+                <div id="attachmentPreview" class="attachment-preview hidden">
+                    <i data-lucide="file" class="attachment-icon"></i>
+                    <span id="attachmentName">filename.png</span>
+                    <button type="button" id="removeAttachmentBtn" title="Remove attachment"><i data-lucide="x"></i></button>
+                </div>
                 <form id="chatForm" class="input-form">
-                    <button type="button" class="icon-btn attach-btn" title="Attach"><i data-lucide="paperclip"></i></button>
+                    <input type="file" id="fileInput" accept="image/*,.txt,.log,.md" style="display: none;">
+                    <button type="button" class="icon-btn attach-btn" id="attachBtn" title="Attach photo or log"><i data-lucide="paperclip"></i></button>
                     <input type="text" id="chatInput" placeholder="Ask me for a command, script, or configuration..." autocomplete="off">
                     <button type="submit" id="submitBtn" class="send-btn">
                         <i data-lucide="send-horizonal"></i>
@@ -74,6 +80,8 @@
             </div>
         </main>
     </div>
+    
+    <div id="toastContainer" class="toast-container"></div>
     
     <script src="script.js"></script>
 </body>
