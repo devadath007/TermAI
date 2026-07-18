@@ -20,16 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
 
-    // Background Blob Mouse Parallax
+    // Background Blob Mouse Tracking
     const blobs = document.querySelectorAll('.blob');
     document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 100; // -50 to 50
-        const y = (e.clientY / window.innerHeight - 0.5) * 100; // -50 to 50
+        const x = e.clientX;
+        const y = e.clientY;
         
-        blobs.forEach((blob, index) => {
-            const speed = (index + 1) * 2; 
-            const invert = index % 2 === 0 ? 1 : -1;
-            blob.style.transform = `translate(${x * speed * invert}px, ${y * speed * invert}px)`;
+        blobs.forEach((blob) => {
+            blob.style.transform = `translate(calc(${x}px - 50%), calc(${y}px - 50%))`;
         });
     });
 

@@ -586,14 +586,16 @@ body {
 }
 .blob {
     position: absolute;
+    top: 0;
+    left: 0;
     filter: blur(80px);
     border-radius: 50%;
     opacity: 0.6;
-    transition: transform 1.5s cubic-bezier(0.1, 1, 0.3, 1);
+    transition: transform 0.6s cubic-bezier(0.1, 1, 0.3, 1);
 }
-.blob-1 { background: var(--blob-1, rgba(41, 140, 252, 0.3)); width: 40vw; height: 40vw; top: -10%; left: -10%; }
-.blob-2 { background: var(--blob-2, rgba(14, 165, 233, 0.3)); width: 35vw; height: 35vw; bottom: -10%; right: -10%; }
-.blob-3 { background: var(--blob-3, rgba(96, 165, 250, 0.2)); width: 30vw; height: 30vw; top: 40%; left: 40%; }
+.blob-1 { background: var(--blob-1, rgba(41, 140, 252, 0.3)); width: 45vw; height: 45vw; }
+.blob-2 { background: var(--blob-2, rgba(14, 165, 233, 0.3)); width: 35vw; height: 35vw; transition-duration: 1.2s; }
+.blob-3 { background: var(--blob-3, rgba(96, 165, 250, 0.2)); width: 25vw; height: 25vw; transition-duration: 1.8s; }
 
 /* Light Mode Overrides */
 body.light-mode {
