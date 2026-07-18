@@ -55,30 +55,20 @@
                     <i data-lucide="terminal" class="model-icon"></i>
                     <div>
                         <h1>TermAI Core</h1>
-                        <p>Local AI CLI Engine</p>
+                        <p>Command Line Interface Engine</p>
                     </div>
                 </div>
                 <div style="display: flex; gap: 8px;">
                     <button class="icon-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme"><i data-lucide="sun"></i></button>
                 </div>
             </header>
-
-            <div id="modelLoadingBanner" class="model-loading-banner">
-                <i data-lucide="cpu" class="spinning-icon"></i>
-                <div class="loading-info">
-                    <span id="loadingStatusText">Downloading AI Model to your browser (First time only)...</span>
-                    <div class="progress-bar-bg">
-                        <div id="loadingProgressBar" class="progress-bar-fill" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
             
             <div class="chat-scroll-area" id="chatHistory">
                 <!-- Welcome Message -->
                 <div class="message ai-message fade-in">
                     <div class="avatar ai-avatar"><i data-lucide="bot"></i></div>
                     <div class="message-bubble">
-                        <p>Hello! I am your Local TermAI CLI assistant. I am running completely offline in your browser. How can I help you streamline your workflow today?</p>
+                        <p>Hello! I am your TermAI CLI assistant. How can I help you streamline your workflow today?</p>
                     </div>
                 </div>
             </div>
@@ -90,20 +80,19 @@
                     <button type="button" id="removeAttachmentBtn" title="Remove attachment"><i data-lucide="x"></i></button>
                 </div>
                 <form id="chatForm" class="input-form">
-                    <input type="file" id="fileInput" accept="image/*,.txt,.log,.md" style="display: none;" disabled title="Image analysis is not supported by this local model">
-                    <button type="button" class="icon-btn attach-btn disabled" id="attachBtn" title="Attachments not supported locally"><i data-lucide="paperclip"></i></button>
-                    <input type="text" id="chatInput" placeholder="Ask me for a command, script, or configuration..." autocomplete="off" disabled>
-                    <button type="submit" id="submitBtn" class="send-btn" disabled>
+                    <input type="file" id="fileInput" accept="image/*,.txt,.log,.md" style="display: none;">
+                    <button type="button" class="icon-btn attach-btn" id="attachBtn" title="Attach photo or log"><i data-lucide="paperclip"></i></button>
+                    <input type="text" id="chatInput" placeholder="Ask me for a command, script, or configuration..." autocomplete="off">
+                    <button type="submit" id="submitBtn" class="send-btn">
                         <i data-lucide="send-horizonal"></i>
                     </button>
                 </form>
             </div>
         </main>
     </div>
-    
+
     <div id="toastContainer" class="toast-container"></div>
     
-    <!-- Application Script -->
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
