@@ -589,11 +589,11 @@ body {
     filter: blur(80px);
     border-radius: 50%;
     opacity: 0.6;
-    animation: floatBlob 20s infinite ease-in-out alternate;
+    animation: floatBlob 12s infinite ease-in-out alternate;
 }
 .blob-1 { background: var(--blob-1, rgba(41, 140, 252, 0.3)); width: 40vw; height: 40vw; top: -10%; left: -10%; animation-delay: 0s; }
-.blob-2 { background: var(--blob-2, rgba(85, 42, 216, 0.3)); width: 35vw; height: 35vw; bottom: -10%; right: -10%; animation-delay: -5s; }
-.blob-3 { background: var(--blob-3, rgba(200, 50, 150, 0.2)); width: 30vw; height: 30vw; top: 40%; left: 40%; animation-delay: -10s; }
+.blob-2 { background: var(--blob-2, rgba(14, 165, 233, 0.3)); width: 35vw; height: 35vw; bottom: -10%; right: -10%; animation-delay: -3s; }
+.blob-3 { background: var(--blob-3, rgba(96, 165, 250, 0.2)); width: 30vw; height: 30vw; top: 40%; left: 40%; animation-delay: -6s; }
 
 @keyframes floatBlob {
     0% { transform: translate(0, 0) scale(1); }
@@ -614,10 +614,10 @@ body.light-mode {
     --accent: #0f172a; /* Slate 900 */
     --accent-hover: #334155;
     
-    /* Vibrant pastel blobs for light mode */
+    /* Vibrant blue blobs for light mode */
     --blob-1: rgba(14, 165, 233, 0.5); /* Sky Blue */
-    --blob-2: rgba(168, 85, 247, 0.5); /* Purple */
-    --blob-3: rgba(236, 72, 153, 0.5); /* Pink */
+    --blob-2: rgba(59, 130, 246, 0.5); /* Blue */
+    --blob-3: rgba(96, 165, 250, 0.5); /* Light Blue */
 }
 
 /* Intensify the blobs in light mode to make the glass pop */
