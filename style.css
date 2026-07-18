@@ -702,3 +702,64 @@ body.light-mode .message-bubble a {
 body.light-mode .message-bubble a:hover {
     color: #1d4ed8;
 }
+
+/* Mobile Responsiveness */
+.mobile-menu-btn {
+    display: none;
+}
+.sidebar-overlay {
+    display: none;
+}
+@media (max-width: 768px) {
+    .app-container {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+    .mobile-menu-btn {
+        display: block;
+        margin-right: 12px;
+    }
+    .chat-header .model-info {
+        flex: 1;
+    }
+    .sidebar {
+        position: absolute;
+        top: 10px;
+        bottom: 10px;
+        left: -320px;
+        width: 300px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .app-container.sidebar-open .sidebar {
+        left: 10px;
+    }
+    
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        backdrop-filter: blur(2px);
+    }
+    .app-container.sidebar-open .sidebar-overlay {
+        display: block;
+    }
+    
+    .chat-container {
+        border-radius: 12px;
+    }
+    .input-form {
+        flex-direction: column;
+    }
+    .input-form textarea {
+        min-height: 50px;
+    }
+    .input-wrapper {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+    }
+}

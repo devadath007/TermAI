@@ -20,6 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
 
+    // Mobile Sidebar Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const appContainer = document.querySelector('.app-container');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    mobileMenuBtn.addEventListener('click', () => {
+        appContainer.classList.add('sidebar-open');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+        appContainer.classList.remove('sidebar-open');
+    });
+
     // 1. Dynamic Quick Commands (localStorage)
     const defaultCommands = [
         { id: 'c1', title: 'System Information', code: 'uname -a || systeminfo' },
