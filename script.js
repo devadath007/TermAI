@@ -20,17 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
 
-    // Background Blob Mouse Tracking
-    const blobs = document.querySelectorAll('.blob');
-    document.addEventListener('mousemove', (e) => {
-        const x = e.clientX;
-        const y = e.clientY;
-        
-        blobs.forEach((blob) => {
-            blob.style.transform = `translate(calc(${x}px - 50%), calc(${y}px - 50%))`;
-        });
-    });
-
     // 1. Dynamic Quick Commands (localStorage)
     const defaultCommands = [
         { id: 'c1', title: 'System Information', code: 'uname -a || systeminfo' },
