@@ -603,20 +603,28 @@ body {
 
 /* Light Mode Overrides */
 body.light-mode {
-    --text-primary: #18181b; /* Zinc 900 */
-    --text-secondary: #52525b; /* Zinc 600 */
-    --bg-base: #f4f4f5; /* Zinc 100 */
+    --text-primary: #0f172a; /* Slate 900 */
+    --text-secondary: #475569; /* Slate 600 */
+    --bg-base: #f8fafc; /* Slate 50 */
     
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(0, 0, 0, 0.1);
-    --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --glass-bg: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.8);
+    --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
     
-    --accent: #09090b; /* Black */
-    --accent-hover: #27272a;
+    --accent: #0f172a; /* Slate 900 */
+    --accent-hover: #334155;
     
-    --blob-1: rgba(59, 130, 246, 0.3);
-    --blob-2: rgba(139, 92, 246, 0.3);
-    --blob-3: rgba(236, 72, 153, 0.3);
+    /* Vibrant pastel blobs for light mode */
+    --blob-1: rgba(14, 165, 233, 0.5); /* Sky Blue */
+    --blob-2: rgba(168, 85, 247, 0.5); /* Purple */
+    --blob-3: rgba(236, 72, 153, 0.5); /* Pink */
+}
+
+/* Intensify the blobs in light mode to make the glass pop */
+body.light-mode .blob {
+    filter: blur(100px);
+    opacity: 0.9;
+    transform: scale(1.2);
 }
 
 body.light-mode .ai-message .message-bubble {
