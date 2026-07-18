@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (err) {
             console.error(err);
-            bubbleDiv.innerHTML = \`<span style="color: #ef4444;">Error: \${err.message}</span>\`;
+            bubbleDiv.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
         }
     });
 
