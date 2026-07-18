@@ -20,6 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
 
+    // Background Blob Mouse Parallax
+    const blobs = document.querySelectorAll('.blob');
+    document.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 100; // -50 to 50
+        const y = (e.clientY / window.innerHeight - 0.5) * 100; // -50 to 50
+        
+        blobs.forEach((blob, index) => {
+            const speed = (index + 1) * 2; 
+            const invert = index % 2 === 0 ? 1 : -1;
+            blob.style.transform = `translate(${x * speed * invert}px, ${y * speed * invert}px)`;
+        });
+    });
+
     // 1. Dynamic Quick Commands (localStorage)
     const defaultCommands = [
         { id: 'c1', title: 'System Information', code: 'uname -a || systeminfo' },
