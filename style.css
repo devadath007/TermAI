@@ -683,3 +683,6 @@ body.light-mode .toast-msg {
     border: 1px solid rgba(0,0,0,0.1);
     color: #18181b;
 }
+body.light-mode .send-btn {
+    color: #ffffff;
+}
