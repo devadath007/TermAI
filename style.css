@@ -309,6 +309,9 @@ body {
     border-radius: 12px;
     font-size: 14.5px;
     line-height: 1.6;
+    min-width: 0;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .ai-message .message-bubble {
@@ -762,5 +765,8 @@ body.light-mode .message-bubble a:hover {
     }
     .input-form textarea {
         min-height: 40px;
+    }
+    .message {
+        max-width: 98%;
     }
 }
