@@ -714,6 +714,12 @@ body.light-mode .message-bubble a:hover {
     .app-container {
         grid-template-columns: 1fr;
         padding: 10px;
+        height: 100dvh;
+        height: -webkit-fill-available;
+    }
+    html, body {
+        height: 100dvh;
+        height: -webkit-fill-available;
     }
     .mobile-menu-btn {
         display: block;
@@ -751,15 +757,10 @@ body.light-mode .message-bubble a:hover {
     .chat-container {
         border-radius: 12px;
     }
-    .input-form {
-        flex-direction: column;
+    .input-area {
+        padding: 0 12px 12px;
     }
     .input-form textarea {
-        min-height: 50px;
-    }
-    .input-wrapper {
-        width: 100%;
-        display: flex;
-        gap: 8px;
+        min-height: 40px;
     }
 }
