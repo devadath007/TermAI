@@ -1,22 +1,25 @@
-# TermAI - NextGen HUD
+# TermAI - Local HUD
 
-A highly interactive, stealth-themed web application designed as a next-generation Heads-Up Display (HUD) for CLI developers. Powered by Google Gemini AI, it acts as a cross-platform expert terminal assistant directly inside your browser.
+A highly interactive, stealth-themed web application designed as a next-generation Heads-Up Display (HUD) for CLI developers. Powered by **WebLLM** and local AI models, it acts as a completely private, cross-platform expert terminal assistant directly inside your browser—no backend servers or API keys required!
 
 ## Features
 
+- **100% Private, Local AI**: The AI model runs entirely on your machine using your browser's WebGPU. No data is sent to external APIs, and there are absolutely no rate limits.
 - **Professional Glassmorphism UI**: A sleek, dark "stealth mode" aesthetic with beautiful animated gradient backgrounds and frosted glass panels.
-- **Google Gemini Integration**: A lightweight Node.js backend connects directly to Google's elite Generative AI models.
-- **Cross-Platform CLI Expertise**: The AI is strictly prompted to provide accurate terminal commands tailored to Windows (PowerShell/CMD), Linux, and macOS.
+- **Cross-Platform CLI Expertise**: The local AI acts as your personal terminal expert, providing accurate commands tailored to Windows (PowerShell/CMD), Linux, and macOS.
 - **Quick Commands Panel**: A fast, searchable sidebar of frequently used snippets that instantly populates the chat.
 - **Smart Markdown Rendering**: AI responses are cleanly formatted with code blocks, inline code highlighting, and professional typography using the Inter font.
 
 ## Tech Stack
 
 - **Frontend**: HTML5, Vanilla CSS (Glassmorphism), Vanilla JavaScript
-- **Backend**: Node.js, Express, Google GenAI SDK (`@google/generative-ai`)
+- **Local AI Engine**: WebLLM (`@mlc-ai/web-llm`) running Microsoft's Phi-3 model via WebGPU
 - **Icons & Parsing**: Lucide Icons, Marked.js
+- **Backend**: None! 100% static frontend.
 
 ## Quick Start Setup
+
+Since the application is purely a static frontend, there is no build step or backend server required.
 
 1. **Clone the repository**
    ```bash
@@ -24,26 +27,30 @@ A highly interactive, stealth-themed web application designed as a next-generati
    cd TermAI
    ```
 
-2. **Install Dependencies**
+2. **Run a local web server**
+   Because the browser needs to load the AI model using Web Workers and fetch API, you cannot simply double-click the `index.html` file (due to CORS policies for local files). You must serve it via a local web server.
+
+   You can use Python:
    ```bash
-   npm install
+   python -m http.server 3000
    ```
-
-3. **Configure Environment Variables**
-   Create a `.env` file in the root directory and add your Google Gemini API key:
-   ```env
-   # .env
-   GEMINI_API_KEY=your_actual_api_key_here
-   GEMINI_MODEL=gemini-flash-lite-latest
-   ```
-
-4. **Run the Backend Server**
+   Or Node.js (npx):
    ```bash
-   npm start
+   npx serve .
    ```
+   Or any other static server extension like "Live Server" in VS Code.
 
-5. **Launch the Application**
-   Open the `index.html` file in your preferred web browser, or configure the server to serve it statically on `http://localhost:3000`.
+3. **Launch the Application**
+   Open your browser to `http://localhost:3000`. The first time you load the page, the application will download the AI model directly into your browser cache (approx. 1.8GB). Subsequent loads will be instantaneous.
+
+## Hosting
+
+Because TermAI is entirely static, it can be hosted for free forever on platforms like:
+- **GitHub Pages** (Recommended)
+- Vercel
+- Netlify
+
+Simply deploy the root directory to your host of choice. No environment variables or build commands are necessary.
 
 ## Developer
 
