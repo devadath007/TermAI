@@ -722,14 +722,17 @@ body.light-mode .message-bubble a:hover {
 }
 @media (max-width: 768px) {
     .app-container {
-        grid-template-columns: 1fr;
         padding: 10px;
         height: 100dvh;
         height: -webkit-fill-available;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
     }
     html, body {
         height: 100dvh;
         height: -webkit-fill-available;
+        overflow-x: hidden;
     }
     .mobile-menu-btn {
         display: block;
@@ -766,6 +769,12 @@ body.light-mode .message-bubble a:hover {
     
     .chat-container {
         border-radius: 12px;
+        min-width: 0;
+        width: 100%;
+        max-width: 100vw;
+    }
+    .chat-scroll-area {
+        padding: 16px;
     }
     .input-area {
         padding: 0 12px 12px;
