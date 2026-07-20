@@ -74,8 +74,25 @@ app.post('/api/chat', async (req, res) => {
                 aiMessage = result.response.text();
                 break; // Success! Stop trying other models.
             } catch (error) {
-                console.log(`[WARN] Model ${modelName} failed, falling back... Error: ${error.message.substring(0, 100)}`);
                 lastError = error;
+                const status = error.status || (error.response && error.response.status);
+                const message = error.message.toLowerCase();
+                
+                // If it's a rate limit or service unavailable, try the next model
+                if (status === 503 || status === 429 || message.includes('503') || message.includes('429') || message.includes('overloaded')) {
+                    console.log(`[WARN] Model ${modelName} rate limited, falling back...`);
+                    continue;
+                }
+                
+                // If it's a 404 on a fallback model, continue
+                if (status === 404 || message.includes('not found') || message.includes('404')) {
+                    console.log(`[WARN] Model ${modelName} not found, falling back...`);
+                    continue;
+                }
+
+                // If it's an API Key or bad request issue, STOP and throw immediately
+                console.log(`[ERROR] Fatal error on ${modelName}: ${error.message}`);
+                break;
             }
         }
 
