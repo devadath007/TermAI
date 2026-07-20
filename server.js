@@ -50,7 +50,11 @@ app.post('/api/chat', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
+        // Fallback safely to gemini-1.5-flash if their env var contains the old invalid name
+        let modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+        if (modelName.includes("latest") || modelName === "gemini-pro") {
+             modelName = "gemini-1.5-flash";
+        }
 
         let aiMessage = null;
 
