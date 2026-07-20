@@ -22,6 +22,28 @@ Maintain a highly professional, enterprise-grade AI persona.
 If the user attaches an image or a log file of an error, analyze it carefully. Identify the terminal error or issue from the file and provide the proper terminal instructions to fix it.
 `;
 
+async function getAvailableModel(apiKey) {
+    try {
+        const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models?key=\${apiKey}\`);
+        if (!response.ok) return "gemini-1.5-flash"; // Fallback if fetch fails
+        const data = await response.json();
+        
+        // Find the first model that supports generateContent and is a gemini model
+        if (data.models) {
+            for (const model of data.models) {
+                if (model.supportedGenerationMethods && 
+                    model.supportedGenerationMethods.includes("generateContent") && 
+                    model.name.includes("gemini")) {
+                    return model.name.replace("models/", "");
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Failed to dynamically fetch models:", e);
+    }
+    return "gemini-1.5-flash"; // Ultimate fallback
+}
+
 app.post('/api/chat', async (req, res) => {
     try {
         const { message, attachment } = req.body;
@@ -50,10 +72,12 @@ app.post('/api/chat', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        // Fallback safely to gemini-1.5-flash if their env var contains the old invalid name
-        let modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-        if (modelName.includes("latest") || modelName === "gemini-pro") {
-             modelName = "gemini-1.5-flash";
+        
+        let modelName = process.env.GEMINI_MODEL;
+        if (!modelName || modelName.includes("latest") || modelName === "gemini-pro") {
+             // Dynamically discover a working model for this specific API key
+             modelName = await getAvailableModel(apiKey);
+             console.log("[INFO] Dynamically selected model:", modelName);
         }
 
         let aiMessage = null;
