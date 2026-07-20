@@ -2,6 +2,9 @@
   "name": "termai",
   "version": "1.0.0",
   "description": "TermAI Core Engine",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "main": "server.js",
   "type": "module",
   "scripts": {
