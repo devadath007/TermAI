@@ -24,7 +24,7 @@ If the user attaches an image or a log file of an error, analyze it carefully. I
 
 async function getAvailableModel(apiKey) {
     try {
-        const response = await fetch(\`https://generativelanguage.googleapis.com/v1beta/models?key=\${apiKey}\`);
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
         if (!response.ok) return "gemini-1.5-flash"; // Fallback if fetch fails
         const data = await response.json();
         
