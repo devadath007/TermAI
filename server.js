@@ -50,61 +50,26 @@ app.post('/api/chat', async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        let baseModel = process.env.GEMINI_MODEL || "gemini-flash-latest";
-        if (baseModel === "gemini-1.5-pro") baseModel = "gemini-flash-latest";
-
-        const fallbackModels = [
-            baseModel,
-            "gemini-1.5-flash",
-            "gemini-1.5-pro",
-            "gemini-1.0-pro",
-            "gemini-pro"
-        ];
+        const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
 
         let aiMessage = null;
-        let lastError = null;
 
-        for (const modelName of fallbackModels) {
-            try {
-                const model = genAI.getGenerativeModel({
-                    model: modelName,
-                    systemInstruction: SYSTEM_INSTRUCTION
-                });
-                const result = await model.generateContent(parts);
-                aiMessage = result.response.text();
-                break; // Success! Stop trying other models.
-            } catch (error) {
-                lastError = error;
-                const status = error.status || (error.response && error.response.status);
-                const message = error.message.toLowerCase();
-                
-                // If it's a rate limit or service unavailable, try the next model
-                if (status === 503 || status === 429 || message.includes('503') || message.includes('429') || message.includes('overloaded')) {
-                    console.log(`[WARN] Model ${modelName} rate limited, falling back...`);
-                    continue;
-                }
-                
-                // If it's a 404 on a fallback model, continue
-                if (status === 404 || message.includes('not found') || message.includes('404')) {
-                    console.log(`[WARN] Model ${modelName} not found, falling back...`);
-                    continue;
-                }
-
-                // If it's an API Key or bad request issue, STOP and throw immediately
-                console.log(`[ERROR] Fatal error on ${modelName}: ${error.message}`);
-                break;
-            }
+        try {
+            const model = genAI.getGenerativeModel({
+                model: modelName,
+                systemInstruction: SYSTEM_INSTRUCTION
+            });
+            const result = await model.generateContent(parts);
+            aiMessage = result.response.text();
+            res.json({ text: aiMessage });
+        } catch (error) {
+            console.error('[ERROR] Gemini API call failed:', error);
+            res.status(500).json({ text: `[CRITICAL FAULT] Core connection severed. Details: ${error.message}` });
         }
-
-        if (aiMessage === null) {
-            throw lastError || new Error("All fallback models failed.");
-        }
-
-        res.json({ text: aiMessage });
 
     } catch (error) {
         console.error('Chat error:', error);
-        res.status(500).json({ text: `[CRITICAL FAULT] Core connection severed. Details: ${error.message}` });
+        res.status(500).json({ text: `[CRITICAL FAULT] Server crashed. Details: ${error.message}` });
     }
 });
 
