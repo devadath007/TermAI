@@ -33,7 +33,8 @@ async function getAvailableModel(apiKey) {
             for (const model of data.models) {
                 if (model.supportedGenerationMethods && 
                     model.supportedGenerationMethods.includes("generateContent") && 
-                    model.name.includes("gemini")) {
+                    model.name.includes("gemini") &&
+                    !model.name.includes("gemini-2.5")) {
                     return model.name.replace("models/", "");
                 }
             }
