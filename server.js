@@ -22,27 +22,31 @@ Maintain a highly professional, enterprise-grade AI persona.
 If the user attaches an image or a log file of an error, analyze it carefully. Identify the terminal error or issue from the file and provide the proper terminal instructions to fix it.
 `;
 
-async function getAvailableModel(apiKey) {
+async function getAvailableModels(apiKey) {
+    let models = [];
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        if (!response.ok) return "gemini-1.5-flash"; // Fallback if fetch fails
+        if (!response.ok) return ["gemini-1.5-flash", "gemini-1.5-pro"]; // Fallback if fetch fails
         const data = await response.json();
         
-        // Find the first model that supports generateContent and is a gemini model
+        // Find all models that support generateContent and are gemini models
         if (data.models) {
             for (const model of data.models) {
                 if (model.supportedGenerationMethods && 
                     model.supportedGenerationMethods.includes("generateContent") && 
                     model.name.includes("gemini") &&
                     !model.name.includes("gemini-2.5")) {
-                    return model.name.replace("models/", "");
+                    models.push(model.name.replace("models/", ""));
                 }
             }
         }
     } catch (e) {
         console.error("Failed to dynamically fetch models:", e);
     }
-    return "gemini-1.5-flash"; // Ultimate fallback
+    if (models.length === 0) {
+        models = ["gemini-1.5-flash", "gemini-1.5-pro"]; // Ultimate fallback
+    }
+    return models;
 }
 
 app.post('/api/chat', async (req, res) => {
@@ -74,27 +78,39 @@ app.post('/api/chat', async (req, res) => {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         
-        let modelName = process.env.GEMINI_MODEL;
-        if (!modelName || modelName.includes("latest") || modelName === "gemini-pro") {
-             // Dynamically discover a working model for this specific API key
-             modelName = await getAvailableModel(apiKey);
-             console.log("[INFO] Dynamically selected model:", modelName);
+        let modelNames = [];
+        let envModel = process.env.GEMINI_MODEL;
+        if (!envModel || envModel.includes("latest") || envModel === "gemini-pro") {
+             // Dynamically discover working models for this specific API key
+             modelNames = await getAvailableModels(apiKey);
+             console.log("[INFO] Dynamically selected models:", modelNames.join(", "));
+        } else {
+             modelNames = [envModel];
         }
 
         let aiMessage = null;
+        let lastError = null;
 
-        try {
-            const model = genAI.getGenerativeModel({
-                model: modelName,
-                systemInstruction: SYSTEM_INSTRUCTION
-            });
-            const result = await model.generateContent(parts);
-            aiMessage = result.response.text();
-            res.json({ text: aiMessage });
-        } catch (error) {
-            console.error('[ERROR] Gemini API call failed:', error);
-            res.status(500).json({ text: `[CRITICAL FAULT] Core connection severed. Details: ${error.message}` });
+        for (const modelName of modelNames) {
+            try {
+                const model = genAI.getGenerativeModel({
+                    model: modelName,
+                    systemInstruction: SYSTEM_INSTRUCTION
+                });
+                const result = await model.generateContent(parts);
+                aiMessage = result.response.text();
+                break; // Success! Stop trying other models.
+            } catch (error) {
+                console.log(`[WARN] Model ${modelName} failed, falling back... Error: ${error.message.substring(0, 100)}`);
+                lastError = error;
+            }
         }
+
+        if (aiMessage === null) {
+            throw lastError || new Error("All fallback models failed.");
+        }
+
+        res.json({ text: aiMessage });
 
     } catch (error) {
         console.error('Chat error:', error);
