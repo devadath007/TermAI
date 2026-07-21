@@ -37,9 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Recents Logic ---
+    // --- Recents Logic (With History) ---
     let recentChats = JSON.parse(localStorage.getItem('termai_recents')) || [];
+    let currentChatId = null;
     const recentList = document.getElementById('recentList');
+    const chatHistory = document.getElementById('chatHistory');
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    let isFirstMessage = true;
     
     function renderRecents() {
         if (!recentList) return;
@@ -47,34 +51,78 @@ document.addEventListener('DOMContentLoaded', () => {
         recentChats.slice(0, 15).forEach((chat) => {
             const item = document.createElement('div');
             item.className = 'recent-item fade-in';
+            item.dataset.id = chat.id;
             item.innerHTML = `
                 <i data-lucide="message-square"></i>
                 <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${escapeHtml(chat.title)}</span>
             `;
+            item.addEventListener('click', () => loadChat(chat.id));
             recentList.appendChild(item);
         });
         lucide.createIcons();
     }
     renderRecents();
 
+    function saveCurrentChatHTML() {
+        if (!currentChatId) return;
+        const wrapper = document.querySelector('.messages-wrapper');
+        if (!wrapper) return;
+        const html = wrapper.innerHTML;
+        
+        const chatIndex = recentChats.findIndex(c => c.id === currentChatId);
+        if (chatIndex > -1) {
+            recentChats[chatIndex].html = html;
+        } else {
+            // Should not happen normally if addRecentChat was called
+        }
+        localStorage.setItem('termai_recents', JSON.stringify(recentChats));
+    }
+
     function addRecentChat(title) {
         if (title.length > 30) title = title.substring(0, 30) + '...';
-        // Avoid duplicates at the top
-        if (recentChats.length > 0 && recentChats[0].title === title) return;
-        recentChats.unshift({ title, date: new Date().toISOString() });
+        currentChatId = 'chat_' + Date.now();
+        recentChats.unshift({ id: currentChatId, title, date: new Date().toISOString(), html: '' });
         localStorage.setItem('termai_recents', JSON.stringify(recentChats));
         renderRecents();
     }
 
+    function loadChat(id) {
+        const chat = recentChats.find(c => c.id === id);
+        if (!chat) return;
+
+        currentChatId = chat.id;
+        isFirstMessage = false;
+
+        // Hide welcome screen
+        if (welcomeScreen && !welcomeScreen.classList.contains('hidden')) {
+            welcomeScreen.classList.add('hidden');
+        }
+
+        // Remove old wrapper
+        let wrapper = document.querySelector('.messages-wrapper');
+        if (wrapper) wrapper.remove();
+
+        // Create new wrapper and load html
+        wrapper = document.createElement('div');
+        wrapper.className = 'messages-wrapper';
+        wrapper.innerHTML = chat.html || '';
+        chatHistory.appendChild(wrapper);
+        lucide.createIcons();
+        scrollToBottom();
+
+        // Close sidebar on mobile
+        if (appContainer.classList.contains('sidebar-open')) {
+            appContainer.classList.remove('sidebar-open');
+        }
+    }
+
     document.getElementById('newChatBtn').addEventListener('click', () => {
-        location.reload(); // Simple way to reset for now
+        location.reload(); 
     });
 
     // --- UI Elements ---
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
-    const chatHistory = document.getElementById('chatHistory');
-    const welcomeScreen = document.getElementById('welcomeScreen');
     const submitBtn = document.getElementById('submitBtn');
     const micBtn = document.getElementById('micBtn');
     
@@ -86,11 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const removeAttachmentBtn = document.getElementById('removeAttachmentBtn');
 
     let currentAttachment = null;
-    let isFirstMessage = true;
 
     // Input Bar Interactions (Gemini style)
     chatInput.addEventListener('input', () => {
-        if (chatInput.value.trim().length > 0) {
+        if (chatInput.value.trim().length > 0 || currentAttachment) {
             submitBtn.classList.remove('hidden');
             if(micBtn) micBtn.classList.add('hidden');
         } else {
@@ -98,6 +145,42 @@ document.addEventListener('DOMContentLoaded', () => {
             if(micBtn) micBtn.classList.remove('hidden');
         }
     });
+
+    // Voice Input Logic
+    if (micBtn) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            micBtn.addEventListener('click', () => {
+                micBtn.style.color = '#ef4444'; // Red indicates listening
+                recognition.start();
+            });
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                chatInput.value += (chatInput.value ? ' ' : '') + transcript;
+                micBtn.style.color = 'var(--text-primary)';
+                chatInput.dispatchEvent(new Event('input'));
+            };
+            
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error:", event.error);
+                micBtn.style.color = 'var(--text-primary)';
+                alert("Microphone error: " + event.error);
+            };
+            
+            recognition.onend = () => {
+                micBtn.style.color = 'var(--text-primary)';
+            };
+        } else {
+            micBtn.addEventListener('click', () => {
+                alert("Speech recognition is not supported in this browser.");
+            });
+        }
+    }
 
     // Attachments Logic
     attachBtn.addEventListener('click', () => fileInput.click());
@@ -115,8 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             attachmentName.textContent = file.name;
             attachmentPreview.classList.remove('hidden');
-            submitBtn.classList.remove('hidden');
-            if(micBtn) micBtn.classList.add('hidden');
+            chatInput.dispatchEvent(new Event('input'));
         };
         reader.readAsDataURL(file);
     });
@@ -125,13 +207,10 @@ document.addEventListener('DOMContentLoaded', () => {
         currentAttachment = null;
         fileInput.value = '';
         attachmentPreview.classList.add('hidden');
-        if (chatInput.value.trim().length === 0) {
-            submitBtn.classList.add('hidden');
-            if(micBtn) micBtn.classList.remove('hidden');
-        }
+        chatInput.dispatchEvent(new Event('input'));
     });
 
-    // Markdown Renderer override (Remove Save to Quick Commands)
+    // Markdown Renderer override
     const renderer = new marked.Renderer();
     renderer.code = function(codeOrToken, language) {
         let codeText = '';
@@ -186,20 +265,30 @@ document.addEventListener('DOMContentLoaded', () => {
             welcomeScreen.classList.add('hidden');
         }
 
-        if (isFirstMessage && message) {
-            addRecentChat(message);
+        if (isFirstMessage) {
+            const titleMsg = message || "Attachment Context";
+            addRecentChat(titleMsg);
             isFirstMessage = false;
         }
 
-        appendMessage('user', message + (currentAttachment ? ' [Attachment included]' : ''));
+        let userHtml = message ? escapeHtml(message) : '';
+        if (currentAttachment) {
+            if (currentAttachment.mimeType.startsWith('image/')) {
+                userHtml += `${userHtml ? '<br>' : ''}<img src="data:${currentAttachment.mimeType};base64,${currentAttachment.data}" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-top: 8px;">`;
+            } else {
+                userHtml += `${userHtml ? '<br>' : ''}<span style="font-size: 0.85em; color: var(--text-secondary);"><i data-lucide="file" style="width:14px;height:14px;vertical-align:middle;"></i> Attachment included</span>`;
+            }
+        }
+
+        appendMessage('user', userHtml, true);
+        saveCurrentChatHTML();
+        
         chatInput.value = '';
-        submitBtn.classList.add('hidden');
-        if(micBtn) micBtn.classList.remove('hidden');
+        chatInput.dispatchEvent(new Event('input'));
         
         const aiMsgDiv = appendMessage('ai', '');
         const bubbleDiv = aiMsgDiv.querySelector('.message-bubble');
         
-        // Typing indicator like Gemini (shimmer)
         bubbleDiv.innerHTML = '<span style="color: var(--text-secondary);">Generating...</span>';
         scrollToBottom();
 
@@ -226,28 +315,31 @@ document.addEventListener('DOMContentLoaded', () => {
             bubbleDiv.innerHTML = marked.parse(data.text);
             lucide.createIcons(); 
             scrollToBottom();
+            saveCurrentChatHTML();
             
         } catch (err) {
             console.error(err);
             bubbleDiv.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+            saveCurrentChatHTML();
         }
     });
 
-    function appendMessage(sender, text) {
+    function appendMessage(sender, textOrHtml, isHtml = false) {
         const div = document.createElement('div');
         div.className = `message ${sender}-message fade-in`;
         
         const avatarIcon = sender === 'user' ? 'user' : 'sparkles';
         const avatarClass = sender === 'user' ? 'user-avatar' : 'ai-avatar';
         
+        const content = isHtml ? textOrHtml : (textOrHtml ? escapeHtml(textOrHtml) : '');
+        
         div.innerHTML = `
             <div class="avatar ${avatarClass}"><i data-lucide="${avatarIcon}"></i></div>
-            <div class="message-bubble">${text ? escapeHtml(text) : ''}</div>
+            <div class="message-bubble">${content}</div>
         `;
         
         const messagesWrapper = document.querySelector('.messages-wrapper');
         if (!messagesWrapper) {
-            // Create wrapper if it doesn't exist
             const wrapper = document.createElement('div');
             wrapper.className = 'messages-wrapper';
             chatHistory.appendChild(wrapper);
