@@ -107,6 +107,10 @@ app.post('/api/chat', async (req, res) => {
         }
 
         if (aiMessage === null) {
+            const errMsg = (lastError && lastError.message) ? lastError.message.toLowerCase() : "";
+            if (errMsg.includes("429") || errMsg.includes("quota") || errMsg.includes("503") || errMsg.includes("overloaded")) {
+                return res.json({ text: "⚠️ **API Limit Reached:** TermAI has temporarily exhausted the rate limits for all available fallback models. Please wait a few minutes and try again!" });
+            }
             throw lastError || new Error("All fallback models failed.");
         }
 
