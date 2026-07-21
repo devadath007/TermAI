@@ -27,66 +27,70 @@
         <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
         <!-- Sidebar -->
-        <aside class="sidebar glass-panel">
+        <aside class="sidebar">
             <div class="sidebar-header">
-                <i data-lucide="terminal-square"></i>
-                <h2>TermAI Assistant</h2>
+                <i data-lucide="sparkles" class="logo-icon"></i>
+                <h2>TermAI</h2>
             </div>
             
-            <div class="search-box">
-                <i data-lucide="search"></i>
-                <input type="text" id="commandSearch" placeholder="Search snippets..." autocomplete="off">
+            <div class="sidebar-actions">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i data-lucide="plus"></i>
+                    <span>New chat</span>
+                </button>
             </div>
 
-            <h3 class="section-title">Quick Commands</h3>
-            <div class="command-list" id="commandList"></div>
+            <div class="search-box">
+                <i data-lucide="search"></i>
+                <input type="text" id="chatSearch" placeholder="Search chats" autocomplete="off">
+            </div>
+
+            <div class="recents-section">
+                <h3 class="section-title">Recents</h3>
+                <div class="recent-list" id="recentList">
+                    <!-- Dynamic recent chats will go here -->
+                </div>
+            </div>
             
             <div class="sidebar-footer">
-                <div class="status-indicator online"></div>
-                <span>Core Online</span>
+                <div class="user-profile">
+                    <div class="user-avatar-small">U</div>
+                    <span>User</span>
+                </div>
+                <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme"><i data-lucide="sun"></i></button>
             </div>
         </aside>
 
         <!-- Main Chat Area -->
-        <main class="chat-container glass-panel">
+        <main class="chat-container">
             <header class="chat-header">
                 <button class="icon-btn mobile-menu-btn" id="mobileMenuBtn" title="Menu"><i data-lucide="menu"></i></button>
-                <div class="model-info">
-                    <i data-lucide="terminal" class="model-icon"></i>
-                    <div>
-                        <h1>TermAI Core</h1>
-                        <p>Command Line Interface Engine</p>
-                    </div>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button class="icon-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme"><i data-lucide="sun"></i></button>
-                </div>
             </header>
             
             <div class="chat-scroll-area" id="chatHistory">
                 <!-- Welcome Message -->
-                <div class="message ai-message fade-in">
-                    <div class="avatar ai-avatar"><i data-lucide="bot"></i></div>
-                    <div class="message-bubble">
-                        <p>Hello! I am your TermAI CLI assistant. How can I help you streamline your workflow today?</p>
-                    </div>
+                <div class="welcome-screen" id="welcomeScreen">
+                    <h1>Where should we start?</h1>
                 </div>
             </div>
             
             <div class="input-area">
-                <div id="attachmentPreview" class="attachment-preview hidden">
-                    <i data-lucide="file" class="attachment-icon"></i>
-                    <span id="attachmentName">filename.png</span>
-                    <button type="button" id="removeAttachmentBtn" title="Remove attachment"><i data-lucide="x"></i></button>
+                <div class="input-wrapper">
+                    <div id="attachmentPreview" class="attachment-preview hidden">
+                        <i data-lucide="file" class="attachment-icon"></i>
+                        <span id="attachmentName">filename.png</span>
+                        <button type="button" id="removeAttachmentBtn" title="Remove attachment"><i data-lucide="x"></i></button>
+                    </div>
+                    <form id="chatForm" class="input-form">
+                        <input type="file" id="fileInput" accept="image/*,.txt,.log,.md" style="display: none;">
+                        <button type="button" class="icon-btn attach-btn" id="attachBtn" title="Upload file"><i data-lucide="plus"></i></button>
+                        <input type="text" id="chatInput" placeholder="Ask TermAI" autocomplete="off">
+                        <button type="submit" id="submitBtn" class="send-btn hidden">
+                            <i data-lucide="send"></i>
+                        </button>
+                        <button type="button" class="icon-btn mic-btn" id="micBtn" title="Use microphone"><i data-lucide="mic"></i></button>
+                    </form>
                 </div>
-                <form id="chatForm" class="input-form">
-                    <input type="file" id="fileInput" accept="image/*,.txt,.log,.md" style="display: none;">
-                    <button type="button" class="icon-btn attach-btn" id="attachBtn" title="Attach photo or log"><i data-lucide="paperclip"></i></button>
-                    <input type="text" id="chatInput" placeholder="Ask me for a command, script, or configuration..." autocomplete="off">
-                    <button type="submit" id="submitBtn" class="send-btn">
-                        <i data-lucide="send-horizonal"></i>
-                    </button>
-                </form>
             </div>
         </main>
     </div>
