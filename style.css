@@ -21,6 +21,7 @@ body {
     color: var(--text-primary);
     font-family: var(--font-ui);
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
 }
 
@@ -28,6 +29,8 @@ body {
     display: flex;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
+    position: relative;
 }
 
 /* Gemini Sidebar */
@@ -374,8 +377,34 @@ body {
 }
 
 /* Mobile */
+.sidebar-overlay {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+
 @media (max-width: 768px) {
-    .sidebar { display: none; } /* Simplified for this demo */
+    .sidebar { 
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: -320px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+    }
+    
+    .app-container.sidebar-open .sidebar {
+        left: 0;
+    }
+    
+    .app-container.sidebar-open .sidebar-overlay {
+        display: block;
+    }
+    
     .mobile-menu-btn { display: block; }
     .welcome-screen h1 { font-size: 2rem; }
+    .input-area { padding: 0 12px 12px; }
 }
