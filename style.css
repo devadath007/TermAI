@@ -271,12 +271,17 @@ body.light-mode .chat-container {
 
 .welcome-subtitle {
     margin-top: 16px;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
     line-height: 1.5;
+    background: linear-gradient(74deg, #4285f4 0, #9b72cb 9%, #d96570 20%, #d96570 24%, #9b72cb 35%, #4285f4 44%, #9b72cb 50%, #d96570 56%, #131314 75%, #131314 100%);
+    background-size: 400% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 8s ease infinite reverse;
 }
 
 .messages-wrapper {
