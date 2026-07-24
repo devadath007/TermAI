@@ -37,6 +37,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Hacker Matrix Animation ---
+    const canvas = document.getElementById('matrixCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        
+        const resizeCanvas = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+~`|}{[]:;?><,./-='.split('');
+        const fontSize = 14;
+        let columns = canvas.width / fontSize;
+        let drops = [];
+        
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        const drawMatrix = () => {
+            if (document.body.classList.contains('light-mode')) return; // skip drawing in light mode
+            
+            ctx.fillStyle = 'rgba(19, 19, 20, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#10b981'; // Matrix green
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        };
+
+        setInterval(drawMatrix, 33);
+        
+        window.addEventListener('resize', () => {
+            const newCols = canvas.width / fontSize;
+            if (newCols > drops.length) {
+                for (let x = drops.length; x < newCols; x++) {
+                    drops[x] = Math.random() * canvas.height / fontSize;
+                }
+            }
+        });
+    }
+
     // --- Recents Logic (With History) ---
     let recentChats = JSON.parse(localStorage.getItem('termai_recents')) || [];
     let currentChatId = null;

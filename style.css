@@ -40,6 +40,23 @@ body {
     height: 100vh;
     height: 100dvh;
     position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+#matrixCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.15;
+}
+
+body.light-mode #matrixCanvas {
+    display: none;
 }
 
 /* Gemini Sidebar */
@@ -201,6 +218,10 @@ body.light-mode .new-chat-btn:hover {
     display: flex;
     flex-direction: column;
     position: relative;
+    background-color: transparent;
+}
+
+body.light-mode .chat-container {
     background-color: var(--bg-base);
 }
 
