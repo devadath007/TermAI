@@ -75,7 +75,7 @@ body {
     align-items: center;
     gap: 12px;
     background: #282a2c;
-    color: var(--text-primary);
+    color: #e3e3e3;
     border: none;
     padding: 12px 20px;
     border-radius: 24px;
@@ -87,6 +87,15 @@ body {
 
 .new-chat-btn:hover {
     background: var(--surface-hover);
+}
+
+body.light-mode .new-chat-btn {
+    background: #e8eaed;
+    color: #1f1f1f;
+}
+
+body.light-mode .new-chat-btn:hover {
+    background: #d5d8dc;
 }
 
 .search-box {

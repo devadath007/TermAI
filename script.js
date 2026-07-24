@@ -54,9 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
             item.dataset.id = chat.id;
             item.innerHTML = `
                 <i data-lucide="message-square"></i>
-                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${escapeHtml(chat.title)}</span>
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; cursor: default;">${escapeHtml(chat.title)}</span>
             `;
-            item.addEventListener('click', () => loadChat(chat.id));
+            // Removed click listener so it doesn't direct to previous chat
             recentList.appendChild(item);
         });
         lucide.createIcons();
@@ -136,7 +136,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAttachment = null;
 
     // Input Bar Interactions (Gemini style)
+    let currentAbortController = null;
+    const stopBtn = document.getElementById('stopBtn');
+    
+    if (stopBtn) {
+        stopBtn.addEventListener('click', () => {
+            if (currentAbortController) {
+                currentAbortController.abort();
+            }
+        });
+    }
+
     chatInput.addEventListener('input', () => {
+        if (currentAbortController) return; // don't toggle if generating
         if (chatInput.value.trim().length > 0 || currentAttachment) {
             submitBtn.classList.remove('hidden');
             if(micBtn) micBtn.classList.add('hidden');
@@ -289,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const aiMsgDiv = appendMessage('ai', '');
         const bubbleDiv = aiMsgDiv.querySelector('.message-bubble');
         
-        bubbleDiv.innerHTML = '<span style="color: var(--text-secondary);">Generating...</span>';
+        bubbleDiv.innerHTML = '<span style="color: var(--text-secondary);">🤖 Generating...</span>';
         scrollToBottom();
 
         const payload = { message: message || "Analyze the attached file." };
@@ -297,12 +309,18 @@ document.addEventListener('DOMContentLoaded', () => {
             payload.attachment = currentAttachment;
             removeAttachmentBtn.click();
         }
+        
+        currentAbortController = new AbortController();
+        submitBtn.classList.add('hidden');
+        if (stopBtn) stopBtn.classList.remove('hidden');
+        if (micBtn) micBtn.classList.add('hidden');
 
         try {
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                signal: currentAbortController.signal
             });
 
             if (!response.ok) {
@@ -318,9 +336,17 @@ document.addEventListener('DOMContentLoaded', () => {
             saveCurrentChatHTML();
             
         } catch (err) {
-            console.error(err);
-            bubbleDiv.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+            if (err.name === 'AbortError') {
+                bubbleDiv.innerHTML = `<span style="color: var(--text-secondary);">Generation stopped.</span>`;
+            } else {
+                console.error(err);
+                bubbleDiv.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
+            }
             saveCurrentChatHTML();
+        } finally {
+            currentAbortController = null;
+            if (stopBtn) stopBtn.classList.add('hidden');
+            chatInput.dispatchEvent(new Event('input'));
         }
     });
 
@@ -328,13 +354,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const div = document.createElement('div');
         div.className = `message ${sender}-message fade-in`;
         
-        const avatarIcon = sender === 'user' ? 'user' : 'sparkles';
         const avatarClass = sender === 'user' ? 'user-avatar' : 'ai-avatar';
+        const avatarContent = sender === 'user' ? '<i data-lucide="user"></i>' : '<span style="font-size: 1.2rem;">🤖</span>';
         
         const content = isHtml ? textOrHtml : (textOrHtml ? escapeHtml(textOrHtml) : '');
         
         div.innerHTML = `
-            <div class="avatar ${avatarClass}"><i data-lucide="${avatarIcon}"></i></div>
+            <div class="avatar ${avatarClass}">${avatarContent}</div>
             <div class="message-bubble">${content}</div>
         `;
         

@@ -23,7 +23,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <i data-lucide="sparkles" class="logo-icon"></i>
+                <span class="logo-icon" style="font-size: 1.5rem;">🤖</span>
                 <h2>TermAI</h2>
             </div>
             
@@ -79,8 +79,11 @@
                         <input type="file" id="fileInput" accept="image/*,.txt,.log,.md" style="display: none;">
                         <button type="button" class="icon-btn attach-btn" id="attachBtn" title="Upload file"><i data-lucide="plus"></i></button>
                         <input type="text" id="chatInput" placeholder="Ask TermAI" autocomplete="off">
-                        <button type="submit" id="submitBtn" class="send-btn hidden">
+                        <button type="submit" id="submitBtn" class="send-btn hidden" title="Send message">
                             <i data-lucide="send"></i>
+                        </button>
+                        <button type="button" id="stopBtn" class="send-btn hidden" title="Stop generating" style="background: #ef4444; color: white;">
+                            <i data-lucide="square"></i>
                         </button>
                         <button type="button" class="icon-btn mic-btn" id="micBtn" title="Use microphone"><i data-lucide="mic"></i></button>
                     </form>
