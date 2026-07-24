@@ -269,6 +269,16 @@ body.light-mode .chat-container {
     100% { background-position: 100% 0; }
 }
 
+.welcome-subtitle {
+    margin-top: 16px;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+}
+
 .messages-wrapper {
     max-width: 800px;
     margin: 0 auto;
