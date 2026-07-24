@@ -338,6 +338,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             if (err.name === 'AbortError') {
                 bubbleDiv.innerHTML = `<span style="color: var(--text-secondary);">Generation stopped.</span>`;
+                // Put the original query back into the input box so the user can edit it
+                chatInput.value = message;
+                chatInput.dispatchEvent(new Event('input'));
             } else {
                 console.error(err);
                 bubbleDiv.innerHTML = `<span style="color: #ef4444;">Error: ${err.message}</span>`;
